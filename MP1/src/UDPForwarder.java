@@ -4,7 +4,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
-public class UDPForwarder{
+class UDPForwarder{
 
     public void UDPForwarder(String host, Integer p1, Integer p2) {
 
