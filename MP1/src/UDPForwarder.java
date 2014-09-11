@@ -6,7 +6,7 @@ import java.net.InetAddress;
 
 class UDPForwarder{
 
-    public void UDPForwarder(String host, Integer p1, Integer p2) {
+    public static void UDPForwarder(String host, int p1, int p2) {
 
         DatagramSocket p1Socket = null;
         DatagramSocket p2Socket = null;
@@ -24,7 +24,7 @@ class UDPForwarder{
                 System.out.println ("Listening...");
 
                 // recieving data on p1
-                p1Socket.recieve(request);
+                p1Socket.receive(request);
                 System.out.println("Received " +
                     request.getLength() + " bytes" +
                     " from " +
@@ -44,11 +44,13 @@ class UDPForwarder{
         }finally {if(p2Socket != null) p2Socket.close();}
     }
 
-    public static void main(String args[]){
+    public static void main(String args[]) throws SocketException {
 
-        InetAddress localHost = new InetAddress.getLocalHost();
-        DatagramSocket p1 = new DatagramSocket().getLocalPort();
-        DatagramSocket p2 = new DatagramSocket(8888);
-        UDPForwarder(localHost, p1, p2);
+        if (args.length < 3) {
+            System.out.println ("Usage: host port1 port2");
+            System.exit(-1);
+        }
+
+        UDPForwarder(args[0], Integer.parseInt(args[1]), Integer.parseInt(args[2]));
     }
 }
