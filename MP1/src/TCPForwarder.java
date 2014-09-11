@@ -13,30 +13,44 @@ public class TCPForwarder
             System.exit(-1);
         }
 
-        Socket socket1 = null;
-        Socket socket2 = null;
+        ServerSocket socket1 = null;
+        ServerSocket socket2 = null;
 
         int port1 = Integer.parseInt(args[1]);
         int port2 = Integer.parseInt(args[2]);
 
         try {
-            socket1 = new Socket(args[0], port1);
+            socket1 = new ServerSocket(port1);
         } catch (IOException e) {
             e.printStackTrace();
         }
         try {
-            socket2 = new Socket(args[0], port2);
+            socket2 = new ServerSocket(port2);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        DataInputStream inSocket1 = new DataInputStream(socket1.getInputStream());
-        DataOutputStream outSocket1 = new DataOutputStream(socket1.getOutputStream());
+        Socket socketa = socket1.accept();
+
+
+        DataInputStream inSocket1 = new DataInputStream(socketa.getInputStream());
+
+        DataOutputStream outSocket1 = new DataOutputStream(socketa.getOutputStream());
         System.out.println("Data has been received and sent from socket1\n");
 
-        DataOutputStream outSocket2 = new DataOutputStream(outSocket1);
+
+        String socket1Data = inSocket1.readUTF();
+
+        Socket socketb = socket2.accept();
+
+        DataInputStream inSocket2 = new DataInputStream(socketb.getInputStream());
+
+        inSocket2.readUTF();
+
+        DataOutputStream outSocket2 = new DataOutputStream(socketb.getOutputStream());
+
+        outSocket2.writeUTF(socket1Data);
         System.out.println("Data has been received at socket2\n");
-        System.out.println("Socket2: " + outSocket2);
 
         socket1.close();
         socket2.close();
