@@ -1,0 +1,26 @@
+** UDPForwarder
+  Finished in approximately 10 hours. Works as is, main problem was handling
+  when to close which sockets.
+
+** TCPForwarder
+   More than 10 hours have been spent on this assignment. First the design phase
+   was really tedious, and it was hard to comprehend how exactly to start with
+   the assignment. After that, the implementation has been really slow. It is
+   not working in the current condition. We need to be able to handle the
+   passing of the requests being received. Right now, it crashes on reading the
+   requests.
+
+** RFC echo server
+   This was intended to be a wrapper around the forwarders. The forwarders could
+   be used to handle the echo requests.
+
+** Estimate datagram loss
+   The idea here would be to try having the server remember how many datagrams
+   has been sent, and then use this information to look at the difference
+   between what was received at the client, and what was sent. We have not
+   thought much more about the more juicy details.
+
+** Reliable UDP
+   Build upon the datagram class to try and simulate a TCP packet as much as
+   possible. At least try to get the elements from TCP that makes it reliable,
+   such as looking at loss of data, acknowledging packet receival etc.
