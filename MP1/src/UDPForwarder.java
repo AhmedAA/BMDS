@@ -1,6 +1,7 @@
 /**
  * Created by Rasmus on 11-09-2014.
  */
+
 import java.net.*;
 import java.io.*;
 import java.net.DatagramPacket;
@@ -17,46 +18,53 @@ public class UDPForwarder {
         DatagramSocket p2Socket = null;
 
         try {
-            // listen at p1
-            p1Socket = new DatagramSocket(p1);
-            System.out.println("Listening at " + p1Socket.getLocalAddress() + ":" +
-                    p1Socket.getLocalPort());
 
+            // creates data packet
             byte[] buffer = new byte[1000];
+            DatagramPacket data = new DatagramPacket(buffer, buffer.length);
+
             while(true){
 
-                DatagramPacket request = new DatagramPacket(buffer, buffer.length);
-                System.out.println ("Listening...");
+                // creates p1 ("from" socket)
+                p1Socket = new DatagramSocket(null);
 
-                // recieving data on p1
-                p1Socket.receive(request);
-                System.out.println("Received " +
-                        request.getLength() + " bytes" +
-                        " from " +
-                        request.getAddress().toString() +
-                        ":" + request.getPort());
+                // binds p1Socket ("from" socket) to "localhost:p1"
+                p1Socket.bind(new InetSocketAddress("localhost", p1));
 
-                // connecting to p2Socket
-                p2Socket.connect(InetAddress.getByName(host), p2);
-                System.out.println("Now looking at " + host + " at port " + p2);
+                // awesome print
+                System.out.println("Listening at " + p1Socket.getLocalAddress() + ":" +
+                        p1Socket.getLocalPort());
 
-                // BREAK BREAK BREAK !!!
+                // listening ...
+                System.out.println ("Listening..." + "\n");
 
-                // creating and forwarding to p2
-                //p2Socket = new DatagramSocket(p2);
-                //DatagramPacket reply = new DatagramPacket(request.getData(), request.getLength(),
-                  //      request.getAddress(), request.getPort());
+                // receiving data on p1 ("from" socket)
+                p1Socket.receive(data);
 
-                //p2Socket.send(reply);
+                // creating p2 ("to" socket)
+                p2Socket = new DatagramSocket(null);
 
+                // binds p2Socket ("to" socket) to "host:p2"
+                p2Socket.bind(new InetSocketAddress(host, p2));
+
+                // sending data to p2
+                p2Socket.send(data);
+
+                System.out.println("Data received from: " + p1Socket.getLocalAddress() + ":" +
+                        p1Socket.getLocalPort() + "\n");
+
+                System.out.println("Data sent to: " + p2Socket.getLocalAddress() + ":" +
+                        p2Socket.getLocalPort() + "\n");
+
+                System.out.println("Data sent: " + new String(data.getData()) + "\n");
+
+                p1Socket.close();
+                p2Socket.close();
             }
-
-            // connect to 'h' at 'p2' (the destination host and port)
-
 
         }catch (SocketException e){System.out.println("Socket: " + e.getMessage());
         }catch (IOException e) {System.out.println("IO: " + e.getMessage());
-        }finally {if(p2Socket != null) p2Socket.close();}
+        }finally {if(p2Socket != null || p1Socket != null) p2Socket.close(); p1Socket.close();}
     }
 
     public static void main(String args[]) throws SocketException {
