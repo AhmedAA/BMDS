@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.*;
+import java.util.Scanner;
 
 /**
  * Created by ahmed on 29/09/14.
@@ -7,26 +8,50 @@ import java.net.*;
  */
 public class DataSource {
 
-    int serverPort = 10000;
-    int sinkNumber = 1;
+    public static void main(String[] args) {
 
-    public void Client() throws IOException {
-        ServerSocket listenSocket = null;
+        Thread inputThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-        listenSocket = new ServerSocket(serverPort);
+                Socket s = null;
+                int serverPort = 7896;
 
-        while (true) {
-            Socket clientSocket = listenSocket.accept();
-            System.out.println("Sink " + sinkNumber + " opened");
-            sinkNumber++;
-        }
+                try {
+                    s = new Socket("localhost", serverPort);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                try {
+                    DataInputStream in = new DataInputStream(s.getInputStream());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                DataOutputStream out = null;
+                try {
+                    out = new DataOutputStream(s.getOutputStream());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                Scanner scan = new Scanner(System.in);
+                String input = "";
+                while (true) {
+                    System.out.println("Type something: ");
+                    input = scan.nextLine();
+                    try {
+                        out.writeUTF(input);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    System.out.println("Input: "+input);
+                }
+            }
+        });
+
+        inputThread.start();
     }
+
 }
-    class Connection extends Thread {
 
-        DataInputStream in;
-
-    {
-
-    }
-}
