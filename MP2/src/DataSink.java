@@ -4,4 +4,9 @@
  * to the controller.
  */
 public class DataSink {
+
+    public void Server()
+    {
+
+    }
 }
