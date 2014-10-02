@@ -52,7 +52,8 @@ public class DataSink implements Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-        System.out.println("UPDATED, WOHO!");
+        String test = arg.toString();
+        System.out.println(test);
     }
 }
 

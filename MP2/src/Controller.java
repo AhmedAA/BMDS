@@ -1,11 +1,10 @@
+import javax.xml.transform.Source;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * Created by ahmed on 29/09/14.
@@ -50,23 +49,29 @@ public class Controller {
         }
 
     }
-
-    public void HandleConnection (Socket sock) {
-
-    }
 }
 
 class SourceConnection extends Thread {
+    String messages;
     DataInputStream in;
     DataOutputStream out;
     Socket clientSocket;
 
     public SourceConnection(Socket aClientSocket) throws Exception
     {
+        messages = "";
         clientSocket = aClientSocket;
         in = new DataInputStream(clientSocket.getInputStream());
         out = new DataOutputStream(clientSocket.getOutputStream());
         this.start();
+    }
+
+    public String GetMessage() {
+        return messages;
+    }
+
+    public void SetMessage(String newMessage) {
+        messages = newMessage;
     }
 
     public void run()
@@ -74,8 +79,9 @@ class SourceConnection extends Thread {
         try {
             while(true) {
                 String data = in.readUTF();
+                SetMessage(data);
                 System.out.println(data);
-                out.writeUTF("Right back at 'ya: " + data);
+                out.writeUTF("Source: " + data);
             }
         } catch (Exception e) {
             System.out.println("Connection died:" + e.getMessage());
@@ -95,6 +101,10 @@ class SinkConnection extends Observable implements Runnable{
 
     @Override
     public void run() {
-        sink.update(this, "hej");
+        boolean changed = false;;
+        while (!changed)
+        {
+
+        }
     }
 }
