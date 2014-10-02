@@ -15,28 +15,43 @@ public class Controller {
 
     public static void main(String args[]) throws Exception
     {
-        ServerSocket listenSourceSocket = null;
+        ServerSocket listenSocket = null;
 
         try {
 
-            int sourcePort = 7896;
+            int listenPort = 7896;
 
-            listenSourceSocket = new ServerSocket(sourcePort);
+            listenSocket = new ServerSocket(listenPort);
 
             // source
             while (true) {
 
-                Socket sourceSocket = listenSourceSocket.accept();
-                System.out.println("Controller: Accepted SOURCE socket: " + sourceSocket.getLocalAddress());
+                Socket sourceSocket = listenSocket.accept();
+                DataInputStream initialMsg = new DataInputStream(sourceSocket.getInputStream());
+                String initmsgString = initialMsg.readUTF();
+                System.out.println(initmsgString);
 
-                new SourceConnection(sourceSocket);
+                if (initmsgString.equals("source")) {
+                    System.out.println("Controller: Accepted SOURCE socket: " + sourceSocket.getLocalAddress());
+                    new SourceConnection(sourceSocket);
+                }
+
+                if (initmsgString.equals("sink")){
+                    System.out.println("Controller: Sink accepted");
+                    new SinkConnection(sourceSocket);
+                }
+
             }
 
 
         } finally {
-            if (listenSourceSocket != null)
-                listenSourceSocket.close();
+            if (listenSocket != null)
+                listenSocket.close();
         }
+
+    }
+
+    public void HandleConnection (Socket sock) {
 
     }
 }
@@ -46,78 +61,40 @@ class SourceConnection extends Thread {
     DataOutputStream out;
     Socket clientSocket;
 
-    public SourceConnection(Socket aClientSocket) throws Exception {
-
+    public SourceConnection(Socket aClientSocket) throws Exception
+    {
         clientSocket = aClientSocket;
         in = new DataInputStream(clientSocket.getInputStream());
         out = new DataOutputStream(clientSocket.getOutputStream());
-
         this.start();
-
     }
 
-    public void run() {
-
+    public void run()
+    {
         try {
-
             while(true) {
-
                 String data = in.readUTF();
-                System.out.println("Data: " + data);
-
-                }
-            catch (Exception e) {
-                System.out.println("Connection died:" + e.getMessage());
+                System.out.println(data);
+                out.writeUTF("Right back at 'ya: " + data);
             }
-
-        final Thread sourceThread = new Thread(new Runnable() {
-
-
-
-            }
-        });
-
-        outputThread.start();
-
+        } catch (Exception e) {
+            System.out.println("Connection died:" + e.getMessage());
+        }
     }
-
 }
 
-class Connection extends Observable {
-    DataInputStream in;
-    DataOutputStream out;
+class SinkConnection extends Observable implements Runnable{
+    DataSink sink = new DataSink();
     Socket clientSocket;
 
-    public Connection(Socket aClientSocket) throws Exception {
-
+    public SinkConnection(Socket aClientSocket) throws Exception {
         clientSocket = aClientSocket;
-        in = new DataInputStream(clientSocket.getInputStream());
-        out = new DataOutputStream(clientSocket.getOutputStream());
-        final DataSink sink = new DataSink();
-
-        final Thread outputThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-                addObserver(sink);
-                String input = null;
-
-                while (true) {
-                    try {
-                        input = in.readUTF();
-                        if (input != null) {
-                            setChanged();
-                            notifyObservers(input);
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
-
-        outputThread.start();
-
+        this.addObserver(sink);
+        this.run();
     }
 
+    @Override
+    public void run() {
+        sink.update(this, "hej");
+    }
 }

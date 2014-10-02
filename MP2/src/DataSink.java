@@ -19,13 +19,12 @@ public class DataSink implements Observer {
 
     public static void main(String args[]) throws Exception
     {
-
         Thread inputThread = new Thread(new Runnable() {
             @Override
             public void run() {
 
                 Socket s = null;
-                int serverPort = 9090;
+                int serverPort = 7896;
 
                 try {
                     s = new Socket("localhost", serverPort);
@@ -40,17 +39,10 @@ public class DataSink implements Observer {
                     e.printStackTrace();
                 }
 
-                Scanner scan = new Scanner(System.in);
-                String input = "";
-                while (true) {
-                    System.out.println("Type something: ");
-                    input = scan.nextLine();
-                    try {
-                        out.writeUTF(input);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    System.out.println("Input: "+input);
+                try {
+                    out.writeUTF("sink");
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         });
@@ -60,12 +52,7 @@ public class DataSink implements Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-
-        String resp;
-        if (arg instanceof String) {
-            resp = (String) arg;
-            System.out.println("\nReceived Response: " + resp);
-        }
+        System.out.println("UPDATED, WOHO!");
     }
 }
 

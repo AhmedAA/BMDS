@@ -32,6 +32,13 @@ public class DataSource {
 
                 Scanner scan = new Scanner(System.in);
                 String input = "";
+
+                try {
+                    out.writeUTF("source");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
                 while (true) {
                     System.out.println("Type something: ");
                     input = scan.nextLine();
