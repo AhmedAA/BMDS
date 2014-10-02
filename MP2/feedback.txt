@@ -1,0 +1,8 @@
+** Are your processes web services?
+No. A message queue is generally not a web service. In essence a web service is
+some kind of layer between a source and a client. A message queue is a way to
+control a data flow. It is not necessarily provided over an internet connection
+either.
+
+** Is your system time and/or space de-coupled?
+
