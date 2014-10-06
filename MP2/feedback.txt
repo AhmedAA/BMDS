@@ -1,0 +1,7 @@
+We spent a lot of time trying to figure out the sinks.
+The sources and controller was completed rather fast (2-3 hours), but we ended up spending approx. 7 hours
+on figuring out how to handle the sinks. Which we never managed. We believe that if we had solved the TCPForwarder in the first mini-project, then this would have come easy.
+
+We will be looking into this in our fall break. Some hints would be most welcome, if any can be given :)
+
+Thanks!
