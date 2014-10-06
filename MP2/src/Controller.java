@@ -15,6 +15,8 @@ public class Controller {
     public static void main(String args[]) throws Exception
     {
         ServerSocket listenSocket = null;
+        int sourceNumber = 0;
+        int sinkNumber = 0;
 
         try {
 
@@ -32,12 +34,14 @@ public class Controller {
 
                 if (initmsgString.equals("source")) {
                     System.out.println("Controller: Accepted SOURCE socket: " + sourceSocket.getLocalAddress());
-                    new SourceConnection(sourceSocket);
+                    sourceNumber += 1;
+                    new SourceConnection(sourceSocket, sourceNumber);
                 }
 
                 if (initmsgString.equals("sink")){
                     System.out.println("Controller: Sink accepted");
-                    new SinkConnection(sourceSocket);
+                    sinkNumber += 1;
+                    new SinkConnection(sourceSocket, sinkNumber);
                 }
 
             }
@@ -52,26 +56,18 @@ public class Controller {
 }
 
 class SourceConnection extends Thread {
-    String messages;
     DataInputStream in;
     DataOutputStream out;
     Socket clientSocket;
+    int sourceNumber;
 
-    public SourceConnection(Socket aClientSocket) throws Exception
+    public SourceConnection(Socket aClientSocket, int sn) throws Exception
     {
-        messages = "";
         clientSocket = aClientSocket;
+        sourceNumber = sn;
         in = new DataInputStream(clientSocket.getInputStream());
         out = new DataOutputStream(clientSocket.getOutputStream());
         this.start();
-    }
-
-    public String GetMessage() {
-        return messages;
-    }
-
-    public void SetMessage(String newMessage) {
-        messages = newMessage;
     }
 
     public void run()
@@ -79,9 +75,8 @@ class SourceConnection extends Thread {
         try {
             while(true) {
                 String data = in.readUTF();
-                SetMessage(data);
                 System.out.println(data);
-                out.writeUTF("Source: " + data);
+                out.writeUTF("A" + sourceNumber + " "  + data);
             }
         } catch (Exception e) {
             System.out.println("Connection died:" + e.getMessage());
@@ -89,22 +84,22 @@ class SourceConnection extends Thread {
     }
 }
 
-class SinkConnection extends Observable implements Runnable{
-    DataSink sink = new DataSink();
+class SinkConnection extends Thread {
     Socket clientSocket;
+    DataOutputStream out;
+    DataInputStream in;
+    int sinkNumber;
 
-    public SinkConnection(Socket aClientSocket) throws Exception {
+    public SinkConnection(Socket aClientSocket, int sn) throws Exception {
         clientSocket = aClientSocket;
-        this.addObserver(sink);
-        this.run();
+        out = new DataOutputStream(clientSocket.getOutputStream());
+        in = new DataInputStream(clientSocket.getInputStream());
+        sinkNumber = sn;
+        this.start();
     }
 
-    @Override
-    public void run() {
-        boolean changed = false;;
-        while (!changed)
-        {
+    public void run()
+    {
 
-        }
     }
 }

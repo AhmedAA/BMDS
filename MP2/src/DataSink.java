@@ -15,11 +15,11 @@ import java.util.Scanner;
  * Should be a threaded socket server, that handles client (source) connections, handle the data sent, and sends this
  * to the controller.
  */
-public class DataSink implements Observer {
+public class DataSink {
 
     public static void main(String args[]) throws Exception
     {
-        Thread inputThread = new Thread(new Runnable() {
+        Thread sinkThread = new Thread(new Runnable() {
             @Override
             public void run() {
 
@@ -33,6 +33,8 @@ public class DataSink implements Observer {
                 }
 
                 DataOutputStream out = null;
+                DataInputStream in = null;
+
                 try {
                     out = new DataOutputStream(s.getOutputStream());
                 } catch (IOException e) {
@@ -44,16 +46,32 @@ public class DataSink implements Observer {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+
+                try {
+                    in = new DataInputStream(s.getInputStream());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                String output = "";
+
+                while (true) {
+                    try {
+                        output = in.readUTF();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    try {
+                        out.writeUTF(output);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         });
 
-        inputThread.start();
-    }
-
-    @Override
-    public void update(Observable o, Object arg) {
-        String test = arg.toString();
-        System.out.println(test);
+        sinkThread.start();
     }
 }
 

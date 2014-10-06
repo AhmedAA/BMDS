@@ -10,7 +10,7 @@ public class DataSource {
 
     public static void main(String[] args) {
 
-        Thread inputThread = new Thread(new Runnable() {
+        Thread sourceThread = new Thread(new Runnable() {
             @Override
             public void run() {
 
@@ -52,7 +52,7 @@ public class DataSource {
             }
         });
 
-        inputThread.start();
+        sourceThread.start();
     }
 
 }
