@@ -1,8 +1,17 @@
-** Are your processes web services?
-No. A message queue is generally not a web service. In essence a web service is
-some kind of layer between a source and a client. A message queue is a way to
-control a data flow. It is not necessarily provided over an internet connection
-either.
+Mini-project 2 (BMDS)
+Written by: Ahmed Al-Aqtash & Rasmus Løbner Christensen
 
-** Is your system time and/or space de-coupled?
+1.	Are your processes Web Services?
+No. A message queue is generally not a web service. In essence a web service is some kind of layer between a source and a client. A message queue is a way to control a data flow. It is not necessarily provided over an internet connection either.
 
+2.	Is your system time and/or space de-coupled?
+Yes. In general a message queue is time/space decoupled. And in our case, all the data handling is happening at the controller. 
+
+3.	Is your system a message queue?
+Our concrete implementation is not really a message queue. This could easily be done though, since you would only have to handle the data instead of forwarding everything right away. More precisely sorting data and handling data in some kind of data structure (e.g. hash map, array etc.).
+
+4.	Is your system a publish/subscribe system?
+Yes. Sources publish data, which the sink subscribes to. When a source publishes data, it notifies all the active sinks. 
+
+5.	What are the failure modes of your system?
+If our controller crashes, or in any other way stops running, the Sources keep on going. This result in a state where all the Sources can’t do anything and therefore should be shut down. This is the same for our Sinks. Another failure mode is when either a Source or a Sink gets started before the Controller is active. Both will try to connect, but will both fail since the Controller is not active.
