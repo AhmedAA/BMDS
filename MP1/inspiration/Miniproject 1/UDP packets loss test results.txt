@@ -1,0 +1,21 @@
+For all tests we sent 1000 packets to the server.
+
+1. Testing on a local machine
+
+We made several tests on a single machine, sending packets with an interval of 5 ms. Package size of 100 bytes resulted in no loss, when we increased the package size to 8000 bytes, we lost 6 packets on average, which is still less than 1%. Based on that, we conclude that UDP in a single machine is quite reliable (even though there were minor losses). Since there was no remote connection, the loss was likely due to the server machine.
+
+2. Testing on Ethernet
+
+We tested the transfer between 2 machines connected on ethernet with a package size of 8000 bytes. With an interval of 20 ms, we lost 17 packages on average, which is 1% of all sent. With a shorter interval of 5 ms, the losses increased significantly to 115 or 11%.
+
+3. Testing on WiFi
+
+The test results on WiFi varied a lot, which is probably due to the not so stable connection at ITU. Using interval of 5ms and package size of up to 250 bytes, there was 0 % loss. Package size of 1000 bytes resulted in 2-4 % loss. Package size of 8000, however, resulted in about 30 % loss (which may have been due to temporary problems with WiFi as well). With an increased interval to 20 ms, package loss was between 4-7 %. Overall, package loss over WiFi was the worst yet.
+
+4. Testing on the internet
+
+The results while testing over the internet were quite surprising - we never lost more than 1-2 packages out of 1000, no matter what the package size or transfer interval was. This indicated that transfer over the internet was actually the most reliable of all.
+
+5. Conclusion
+
+Based on our tests, we found that the loss % depends on both size of the package and interval between the transfers. The fact that we got the best results over the internet proves how unpredictable the network transfers could be. Also we never got duplicate packages sent in any of the tests.

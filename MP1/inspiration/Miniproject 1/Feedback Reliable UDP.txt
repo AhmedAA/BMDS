@@ -1,0 +1,9 @@
+Reliable UDP
+----------------------
+Time spend on task: ~6h
+
+Obstacles:
+Some of the mayor obstacles with network code can be to keep track of all the sockets and how to name them, so that you don't mix them up.
+When most of the code was ready to test, we ran into trouble running the code inside two different processes, because "The ports are already in use". This was simply solved, by using two different machines.
+One of the mayor obstacles, was to make the socket able to send and handle packets, while also listening for new packets arriving at the same time. This was solved by using classes, which extended the Thread class: One for listening for incomming packets and one for handling the packets received. This made the socket able to send, receive and handle received packets.
+Another obstacle was to let the user of the socket receive messages. The caller of the receive method would have to wait until all packets of a message were received. The solution lay in a queue, where all fully received messages were moved to and once there was a message the call to receive would fetch the first one in the queue. If no messages there, the call would sleep for a while and try again, effectively making it a blocking call.
