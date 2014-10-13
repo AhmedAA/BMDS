@@ -26,47 +26,31 @@ public class DataSink {
                 Socket s = null;
                 int serverPort = 7896;
 
-                try {
-                    s = new Socket("localhost", serverPort);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
                 DataOutputStream out = null;
                 DataInputStream in = null;
 
                 try {
+                    s = new Socket("localhost", serverPort);
                     out = new DataOutputStream(s.getOutputStream());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                try {
-                    out.writeUTF("sink");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                try {
                     in = new DataInputStream(s.getInputStream());
+                    out.writeUTF("sink");
+
+                    boolean eof = false;
+                    String data = "";
+                    while(!eof) {
+                        try {
+                            //System.out.println("herp");
+                            // Challenge: React when data is received, dammit!
+                            data = in.readUTF();
+                            System.out.println(data);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            eof = true;
+                        }
+                    }
+
                 } catch (IOException e) {
                     e.printStackTrace();
-                }
-
-                String output = "";
-
-                while (true) {
-                    try {
-                        output = in.readUTF();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                    try {
-                        out.writeUTF(output);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
                 }
             }
         });

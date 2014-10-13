@@ -17,23 +17,13 @@ public class DataSource {
                 Socket s = null;
                 int serverPort = 7896;
 
-                try {
-                    s = new Socket("localhost", serverPort);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
                 DataOutputStream out = null;
-                try {
-                    out = new DataOutputStream(s.getOutputStream());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
                 Scanner scan = new Scanner(System.in);
                 String input = "";
 
                 try {
+                    s = new Socket("localhost", serverPort);
+                    out = new DataOutputStream(s.getOutputStream());
                     out.writeUTF("source");
                 } catch (IOException e) {
                     e.printStackTrace();

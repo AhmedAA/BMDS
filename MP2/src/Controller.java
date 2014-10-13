@@ -21,32 +21,31 @@ public class Controller {
         try {
 
             int listenPort = 7896;
+            int sinkPort = 9001;
 
             listenSocket = new ServerSocket(listenPort);
 
             // source
             while (true) {
-
                 Socket sourceSocket = listenSocket.accept();
                 DataInputStream initialMsg = new DataInputStream(sourceSocket.getInputStream());
                 String initmsgString = initialMsg.readUTF();
                 System.out.println(initmsgString);
 
                 if (initmsgString.equals("source")) {
-                    System.out.println("Controller: Accepted SOURCE socket: " + sourceSocket.getLocalAddress());
                     sourceNumber += 1;
+                    System.out.println("Source A" + sourceNumber + " connected");
                     new SourceConnection(sourceSocket, sourceNumber);
                 }
 
                 if (initmsgString.equals("sink")){
                     System.out.println("Controller: Sink accepted");
                     sinkNumber += 1;
-                    new SinkConnection(sourceSocket, sinkNumber);
+                    //Socket sinkSocket = new Socket("localhost", sinkPort);
+                    sinkPort += 1;
+                    new Handler(sourceSocket, sinkNumber);
                 }
-
             }
-
-
         } finally {
             if (listenSocket != null)
                 listenSocket.close();
@@ -74,9 +73,12 @@ class SourceConnection extends Thread {
     {
         try {
             while(true) {
+                List<Socket> sinks = Handler.getSinks();
                 String data = in.readUTF();
                 System.out.println(data);
-                out.writeUTF("A" + sourceNumber + " "  + data);
+                for(Socket sinkSocket : sinks){
+                    out.writeUTF("A" + sourceNumber + " "  + data);
+                }
             }
         } catch (Exception e) {
             System.out.println("Connection died:" + e.getMessage());
@@ -101,5 +103,32 @@ class SinkConnection extends Thread {
     public void run()
     {
 
+    }
+}
+
+class Handler {
+    private static List<Socket> sinks;
+    //List<Socket> sinks = new ArrayList<Socket>();
+    Socket sinkSocket;
+    int sinkNumber;
+
+    public Handler(Socket socket, int sinkNumber) throws IOException {
+        sinkSocket = socket;
+        this.sinkNumber = sinkNumber;
+        DataOutputStream sinkOut = new DataOutputStream(sinkSocket.getOutputStream());
+        //sinkOut.writeUTF("HEEEEEEEEEEEJ");
+        //System.out.println("Burde have skrevet");
+
+        addSinks(sinkSocket, sinkNumber);
+    }
+
+    public static List<Socket> getSinks()
+    {
+        return sinks;
+    }
+
+    public void addSinks(Socket sinkSocket, int sinkNumber) throws IOException {
+        System.out.println("Sink added");
+        sinks.add(sinkSocket);
     }
 }
