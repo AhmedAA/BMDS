@@ -17,6 +17,8 @@ hs_err_pid*
 
 ## Directory-based project format:
 *.idea/
+MP1/.idea
+MP2/.idea
 # if you remove the above rule, at least ignore the follwing:
 
 # User-specific stuff:
