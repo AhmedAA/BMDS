@@ -6,7 +6,7 @@ import java.net.*;
 /**
  * Created by Rasmus on 14-09-2014.
  */
-public class TCPForwarder2 {
+public class TCPForwarder {
 
     public static void TCPForwarder(String host, int p1, int p2) throws IOException {
 
