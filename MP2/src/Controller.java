@@ -77,7 +77,9 @@ class SourceConnection extends Thread {
                 String data = in.readUTF();
                 System.out.println(data);
                 for(Socket sinkSocket : sinks){
-                    out.writeUTF("A" + sourceNumber + " "  + data);
+                    //out.writeUTF("A" + sourceNumber + " "  + data);
+                    DataOutputStream sinkOut = new DataOutputStream(sinkSocket.getOutputStream());
+                    sinkOut.writeUTF(data);
                 }
             }
         } catch (Exception e) {
