@@ -127,7 +127,7 @@ class Handler extends Thread {
         sinkIn = new DataInputStream(sinkSocket.getInputStream());
         //sinkOut.writeUTF("HEEEEEEEEEEEJ");
         //System.out.println("Burde have skrevet");
-        this.run();
+        this.start();
     }
 
     public static ArrayList<Socket> getSinks()
