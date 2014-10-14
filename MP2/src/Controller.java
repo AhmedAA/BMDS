@@ -29,16 +29,16 @@ public class Controller {
             while (true) {
                 Socket sourceSocket = listenSocket.accept();
                 DataInputStream initialMsg = new DataInputStream(sourceSocket.getInputStream());
-                String initmsgString = initialMsg.readUTF();
-                System.out.println(initmsgString);
+                String initMsgString = initialMsg.readUTF();
+                System.out.println(initMsgString);
 
-                if (initmsgString.equals("source")) {
+                if (initMsgString.equals("source")) {
                     sourceNumber += 1;
                     System.out.println("Source A" + sourceNumber + " connected");
                     new SourceConnection(sourceSocket, sourceNumber);
                 }
 
-                if (initmsgString.equals("sink")){
+                if (initMsgString.equals("sink")){
                     System.out.println("Controller: Sink accepted");
                     sinkNumber += 1;
                     //Socket sinkSocket = new Socket("localhost", sinkPort);
