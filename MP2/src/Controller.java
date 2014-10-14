@@ -76,10 +76,15 @@ class SourceConnection extends Thread {
                 List<Socket> sinks = Handler.getSinks();
                 String data = in.readUTF();
                 System.out.println(data);
-                for(Socket sinkSocket : sinks){
-                    //out.writeUTF("A" + sourceNumber + " "  + data);
-                    DataOutputStream sinkOut = new DataOutputStream(sinkSocket.getOutputStream());
-                    sinkOut.writeUTF(data);
+                if(!sinks.isEmpty())
+                {
+                    for(Socket sinkSocket : sinks){
+                        //out.writeUTF("A" + sourceNumber + " "  + data);
+                        DataInputStream sinkIn = new DataInputStream(sinkSocket.getInputStream());
+                        sinkIn.readUTF(in);
+                    }
+                } else {
+                    continue;
                 }
             }
         } catch (Exception e) {
@@ -108,23 +113,24 @@ class SinkConnection extends Thread {
     }
 }
 
-class Handler {
-    private static List<Socket> sinks;
-    //List<Socket> sinks = new ArrayList<Socket>();
+class Handler extends Thread {
+    private static ArrayList<Socket> sinks = new ArrayList<Socket>();
     Socket sinkSocket;
     int sinkNumber;
+    DataOutputStream sinkOut;
+    DataInputStream sinkIn;
 
     public Handler(Socket socket, int sinkNumber) throws IOException {
         sinkSocket = socket;
         this.sinkNumber = sinkNumber;
-        DataOutputStream sinkOut = new DataOutputStream(sinkSocket.getOutputStream());
+        sinkOut = new DataOutputStream(sinkSocket.getOutputStream());
+        sinkIn = new DataInputStream(sinkSocket.getInputStream());
         //sinkOut.writeUTF("HEEEEEEEEEEEJ");
         //System.out.println("Burde have skrevet");
-
-        addSinks(sinkSocket, sinkNumber);
+        this.run();
     }
 
-    public static List<Socket> getSinks()
+    public static ArrayList<Socket> getSinks()
     {
         return sinks;
     }
@@ -132,5 +138,19 @@ class Handler {
     public void addSinks(Socket sinkSocket, int sinkNumber) throws IOException {
         System.out.println("Sink added");
         sinks.add(sinkSocket);
+    }
+
+    public void run()
+    {
+        try {
+            addSinks(sinkSocket, sinkNumber);
+            while(true)
+            {
+                String data = sinkIn.readUTF();
+                sinkOut.writeUTF(data);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
