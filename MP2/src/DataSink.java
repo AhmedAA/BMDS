@@ -35,23 +35,14 @@ public class DataSink {
                     in = new DataInputStream(s.getInputStream());
                     out.writeUTF("sink");
 
-                    boolean eof = false;
-                    //String data = "";
-                    byte[] data = new byte[1500];
-                    while(!eof) {
+                    while(true) {
                         try {
                             //System.out.println("herp");
                             // Challenge: React when data is received, dammit!
-                            in.read(data);
-                            if(data == null)
-                            {
-                                continue;
-                            } else {
-                                System.out.println(data);
-                            }
+                            String message = in.readUTF();
+                            System.out.println(message);
                         } catch (IOException e) {
                             e.printStackTrace();
-                            eof = true;
                         }
                     }
 
