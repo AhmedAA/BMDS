@@ -31,11 +31,11 @@ public class Client {
 
     public static void main(String[] args) {
 
-        int size = 8000; //Integer.parseInt(args[0]);
-        int quantity = 1000; //Integer.parseInt(args[1]);
-        int interval = 2; //Integer.parseInt(args[2]);
+        int size = 10000;
+        int quantity = 1000;
+        int interval = 2;
 
-        new Client("localhost", 80, 8080, size, quantity, interval);
+        new Client("10.25.251.178", 80, 8080, size, quantity, interval);
     }
 
     public void sendStartMes() {

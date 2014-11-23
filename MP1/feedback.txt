@@ -24,3 +24,7 @@
    Build upon the datagram class to try and simulate a TCP packet as much as
    possible. At least try to get the elements from TCP that makes it reliable,
    such as looking at loss of data, acknowledging packet receival etc.
+   The task is not entirely impossible, but to make UDP more reliable, one has to extend it a lot, which just adds
+   an overhead to the protocol. The entire point with UDP is that it is fast, but unreliable. Adding control elements
+   reduces the speed, thus removing one of the main reasons to choose UDP in the first place. So it is not an
+   impossible task, one might just use TCP instead.

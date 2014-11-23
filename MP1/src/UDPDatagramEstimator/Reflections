@@ -1,0 +1,26 @@
+UDP Datagram Loss Estimator:
+
+(for all test we used an amount of 1000 packages and a interval of 2ms)
+
+1. Localhost (local machine)
+
+On average we had 3% datagram losses with packages sized to 10k bytes.
+
+2. Ethernet (Both being connected via cable at ITU)
+
+On average we had 1% datagram losses with packages sized to 10k bytes.
+
+3. WiFi (both being connected to Eduroam @ ITU)
+
+Surprisingly WiFi were pretty stable. On average we lost around 1-2 datagrams, which resulted in 0% datagram losses with packages sized to 10k bytes (perhaps the fact that we did our tests late sunday have an impact)
+
+4. Internet
+
+On average we had 7-8% datagram losses with packages sized to 10k bytes. The results were pretty different, which is kindda expected.
+
+Conclusion:
+
+Higher intervals and lower package size results in less datagram loss. On the other hand, it seems that WiFi is "stronger" than localhost,
+which makes no sense.
+
+
