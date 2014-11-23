@@ -13,9 +13,10 @@ public class TCPForwarder {
         ServerSocket listenSocket = null;
         Socket clientSocket = null;
 
+        listenSocket = new ServerSocket(listenPort);
+
         while(true)
         {
-            listenSocket = new ServerSocket(listenPort);
             clientSocket = listenSocket.accept();
             new Forward(clientSocket);
         }
@@ -23,8 +24,8 @@ public class TCPForwarder {
 }
 
 class Forward extends Thread {
-    String hostname = "itu.dk";
-    int hostport = 80;
+    private static String hostname = "itu.dk";
+    private static int hostport = 80;
 
     DataInputStream in;
     DataOutputStream out;
