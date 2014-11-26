@@ -4,36 +4,35 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 /**
- * Created by ahmed & rasmus on 13/11/14.
+ * Created by Ahmed & Rasmus on 13/11/14.
  */
 public class Node {
 
     private String prev = null;
     private String next = null;
     private String nextnext = null;
-    private int localPort;
-    private int optionalPort;
     private int listenPort;
 
-    public Node(int... nodeVars) {
+    public Node(int port, String... friendVars) {
 
-        // create socket to establish connection
+        // try to establish node
         try {
 
             // get local IP address
             InetAddress localHost = InetAddress.getLocalHost();
 
             // create socket for Node
-            listenPort = 8000; //localPort;
+            listenPort = port;
             ServerSocket connectionSocket = new ServerSocket(listenPort, 0, localHost);
-            listenPort++;
 
             // debug SOUT
             System.out.println("Node at " + localHost + ":" + listenPort + " is now running!");
 
         } catch (IOException e) {
 
-            e.printStackTrace();
+            System.out.println("USER! You must use a free port ...");
+            return;
+            //e.printStackTrace();
         }
 
         Thread nodeThread = new Thread((Runnable) () -> {
@@ -58,16 +57,19 @@ public class Node {
 
     public static void main(String[] args) throws IOException {
 
-        if (args.length == 0) {
+        // the nodes own port
+        int nodePort = Integer.parseInt(args[0]);
 
-            new Node();
+        if (args.length == 1) {
+
+            new Node(nodePort);
         }
 
         else {
 
-            int nodeIP = Integer.parseInt(args[0]);
-            int nodePort = Integer.parseInt(args[1]);
-            new Node(nodeIP, nodePort);
+            // the optional friend input as "ip:port"
+            String friendNode = args[1];
+            new Node(nodePort, friendNode);
         }
 
 
