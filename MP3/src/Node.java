@@ -39,7 +39,7 @@ public class Node {
                 // setting "prev" to the friend
                 prev = friendVars[0];
 
-
+                
                 // my friend needs to know about our friendship!
                 String[] friendData = friendVars[0].split(":");
 
@@ -76,7 +76,9 @@ public class Node {
                     // lyt på nye beskeder - og en form for identificering!
                     // Afhængig af besked, gør stuff
                     // ly på "connectionSocket"
-                    connectionSocket.accept(); // returnere socket object som har "get input stream" etc funktioner
+                    Socket handShake = connectionSocket.accept(); // returnere socket object som har "get input stream" etc funktioner
+                    String snask = handShake.getInputStream().toString();
+                    System.out.println(snask);
 
                 } catch (InterruptedException e) {
                     e.printStackTrace();
