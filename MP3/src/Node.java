@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashMap;
 
 /**
  * Created by Ahmed & Rasmus on 13/11/14.
@@ -15,6 +16,7 @@ public class Node {
     private String nextnext = null;
     private int listenPort;
     private Socket tempSocket;
+    private HashMap messages = new HashMap<>();
     private String[] friendData;
     private ServerSocket connectionSocket;
 
@@ -91,11 +93,22 @@ public class Node {
         nodeThread.start();
     }
 
+    private void addMessage(int key, String message){
+        if(!messages.containsKey(key)) {
+            messages.put(key, message);
+        }
+        else {
+            System.out.println("A message already exists there!");
+        }
+    }
+
+    private void getMessages() {
+
+    }
+
     public void updateNode(String ip, int port) throws IOException {
 
         Socket nodeSocket = new Socket(ip, port);
-
-
 
     }
 

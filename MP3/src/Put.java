@@ -18,6 +18,7 @@ public class Put implements Serializable{
         m.message = args[3];
 
         ObjectOutputStream nodeOut = new ObjectOutputStream(nodeSocket.getOutputStream());
+        nodeOut.writeUTF("Putting");
         nodeOut.writeObject(m);
         nodeOut.close();
 
