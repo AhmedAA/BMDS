@@ -18,7 +18,7 @@ public class Node {
     private Socket tempSocket;
     private HashMap messages = new HashMap<>();
     private String[] friendData;
-    private ServerSocket connectionSocket;
+    private ServerSocket connectionSocket = null;
 
     public Node(int port, String... friendVars) {
 
@@ -30,7 +30,7 @@ public class Node {
 
             // create socket for Node
             listenPort = port;
-            ServerSocket connectionSocket = new ServerSocket(listenPort, 0, localHost);
+            connectionSocket = new ServerSocket(listenPort, 0, localHost);
 
             // debug SOUTs
             System.out.println("Node at " + localHost + ":" + listenPort + " is now running!");
@@ -45,11 +45,8 @@ public class Node {
                 String[] friendData = friendVars[0].split(":");
 
                 Socket friendConnector = new Socket(friendData[0], Integer.parseInt(friendData[1]));
-
-
-                // TODO
-                // Noden har anført en ven. Derfor skal vennen (noden) informeres om deres venskab
-                // Læs: vennen (noden) skal have opdateret sin next værdi til den aktuelle node
+                DataOutputStream toFriend = new DataOutputStream(friendConnector.getOutputStream());
+                toFriend.writeUTF(connectionSocket.getInetAddress().getHostAddress() + ":" + connectionSocket.getLocalPort());
 
             }
 
@@ -72,17 +69,14 @@ public class Node {
                     System.out.println("Next next Node: " + nextnext);
                     System.out.println("------------------------------");
 
-                    Thread.sleep(3000);
+                    Socket handShake = connectionSocket.accept();
+                    DataInputStream in = new DataInputStream(handShake.getInputStream());
+                    String data = in.readUTF();
+                    next = data;
 
-                    // lyt på nye beskeder - og en form for identificering!
-                    // Afhængig af besked, gør stuff
-                    // ly på "connectionSocket"
-                    Socket handShake = connectionSocket.accept(); // returnere socket object som har "get input stream" etc funktioner
-                    String snask = handShake.getInputStream().toString();
-                    System.out.println(snask);
+                    // node has been updated (in some way!)
+                    System.out.println("Node updated!");
 
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
