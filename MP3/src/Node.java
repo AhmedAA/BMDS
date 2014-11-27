@@ -41,12 +41,22 @@ public class Node {
                 // setting "prev" to the friend
                 prev = friendVars[0];
 
-                // my friend needs to know about our friendship!
+                // Details about our friend relationship
                 String[] friendData = friendVars[0].split(":");
 
+                // connect to friend - we have to talk!
                 Socket friendConnector = new Socket(friendData[0], Integer.parseInt(friendData[1]));
+
+                // Trying to start a dialogue (small talk) ...
                 DataOutputStream toFriend = new DataOutputStream(friendConnector.getOutputStream());
-                toFriend.writeUTF(connectionSocket.getInetAddress().getHostAddress() + ":" + connectionSocket.getLocalPort());
+
+                // in order to update our new friend, we need to tell about our friends!
+                // order: handshake msg., myself (new next), next (new nextnext)
+                String friendMsg;
+                friendMsg = "FriendNext" + ";" + connectionSocket.getInetAddress().getHostAddress() + ":" + connectionSocket.getLocalPort();
+
+                // sending friend data
+                toFriend.writeUTF(friendMsg);
 
             }
 
@@ -72,13 +82,39 @@ public class Node {
                     Socket handShake = connectionSocket.accept();
                     DataInputStream in = new DataInputStream(handShake.getInputStream());
                     String data = in.readUTF();
-                    //next = data;
+                    String[] friendData = data.split(";");
+
                     if (data.equals("Putting")){
                         //pull data, call addMessage
                     }
-                    else if (data.equals("Friend")) {
-                        //setup friend relationship
-                    } else if (data.equals("Getting")) {
+
+                    else if (friendData[0].equals("FriendNext")) {
+
+                        next = friendData[1];
+
+                        if (nextnext == null && prev != null) {
+
+                            String[] nextNextStr = prev.split(":");
+                            Socket nextNextSocket = new Socket(nextNextStr[0], Integer.parseInt(nextNextStr[1]));
+                            DataOutputStream nextNextFriend = new DataOutputStream(nextNextSocket.getOutputStream());
+
+                            String nextNextMsg;
+                            nextNextMsg = "FriendNextNext" + ";" + next;
+
+                            // sending friend data
+                            nextNextFriend.writeUTF(nextNextMsg);
+
+                        }
+
+                    }
+
+                    else if (friendData[0].equals("FriendNextNext")) {
+
+                        nextnext = friendData[1];
+
+                    }
+
+                    else if (data.equals("Getting")) {
                         //fetch data, send data
                     }
 
