@@ -72,7 +72,15 @@ public class Node {
                     Socket handShake = connectionSocket.accept();
                     DataInputStream in = new DataInputStream(handShake.getInputStream());
                     String data = in.readUTF();
-                    next = data;
+                    //next = data;
+                    if (data.equals("Putting")){
+                        //pull data, call addMessage
+                    }
+                    else if (data.equals("Friend")) {
+                        //setup friend relationship
+                    } else if (data.equals("Getting")) {
+                        //fetch data, send data
+                    }
 
                     // node has been updated (in some way!)
                     System.out.println("Node updated!");
