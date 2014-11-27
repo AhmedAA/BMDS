@@ -24,11 +24,13 @@ public class NodeTest {
                     ObjectInputStream msgIn = new ObjectInputStream(acceptSocket.getInputStream());
                     Message m = null;
                     while (true) {
-                        m = (Message) msgIn.readObject();
-                        msgIn.close();
-                        acceptSocket.close();
+                        if (msgIn.readUTF().equals("Putting")){
+                            m = (Message) msgIn.readObject();
+                            msgIn.close();
+                            acceptSocket.close();
 
-                        System.out.println(m.key + " " + m.message);
+                            System.out.println(m.key + " " + m.message);
+                        }
                     }
                 } catch (IOException e) {
                     e.printStackTrace();

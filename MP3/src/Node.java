@@ -1,6 +1,7 @@
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -16,7 +17,6 @@ public class Node {
     private String nextnext = null;
     private int listenPort;
     private Socket tempSocket;
-    private HashMap messages = new HashMap<>();
     private String[] friendData;
     private ServerSocket connectionSocket = null;
 
@@ -69,12 +69,22 @@ public class Node {
                     System.out.println("Next next Node: " + nextnext);
                     System.out.println("------------------------------");
 
+                    // Message data structure
+                    HashMap messages = new HashMap<>();
+
                     Socket handShake = connectionSocket.accept();
                     DataInputStream in = new DataInputStream(handShake.getInputStream());
                     String data = in.readUTF();
+                    System.out.println(data);
                     //next = data;
                     if (data.equals("Putting")){
                         //pull data, call addMessage
+                        System.out.println("Read putting?");
+                        ObjectInputStream message = new ObjectInputStream(in);
+                        Message m = (Message) message.readObject();
+
+                        addMessage(messages, m.key, m.message);
+                        //message.close();
                     }
                     else if (data.equals("Friend")) {
                         //setup friend relationship
@@ -87,6 +97,8 @@ public class Node {
 
                 } catch (IOException e) {
                     e.printStackTrace();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
                 }
             }
 
@@ -95,9 +107,10 @@ public class Node {
         nodeThread.start();
     }
 
-    private void addMessage(int key, String message){
+    private void addMessage(HashMap messages, int key, String message){
         if(!messages.containsKey(key)) {
             messages.put(key, message);
+            System.out.println("Added message with key " + key + " value: " + message);
         }
         else {
             System.out.println("A message already exists with that key!");
