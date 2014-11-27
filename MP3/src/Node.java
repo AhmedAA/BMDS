@@ -15,6 +15,8 @@ public class Node {
     private String nextnext = null;
     private int listenPort;
     private Socket tempSocket;
+    private String[] friendData;
+    private ServerSocket connectionSocket;
 
     public Node(int port, String... friendVars) {
 
@@ -34,16 +36,19 @@ public class Node {
             // trigger event - "i got friends!"
             if (friendVars.length > 0) {
 
-                // setting "prev" to the new friend
+                // setting "prev" to the friend
                 prev = friendVars[0];
+
 
                 // my friend needs to know about our friendship!
                 String[] friendData = friendVars[0].split(":");
-                Socket friendSocket = new Socket(friendData[0], Integer.parseInt(friendData[1]));
 
-                tempSocket = friendSocket;
-                DataOutputStream out = new DataOutputStream(tempSocket.getOutputStream());
-                out.writeUTF("HEJ MED DIG NODE?"); // test streng!
+                Socket friendConnector = new Socket(friendData[0], Integer.parseInt(friendData[1]));
+
+
+                // TODO
+                // Noden har anført en ven. Derfor skal vennen (noden) informeres om deres venskab
+                // Læs: vennen (noden) skal have opdateret sin next værdi til den aktuelle node
 
             }
 
@@ -51,41 +56,31 @@ public class Node {
 
             System.out.println("USER! You must use a free port ...");
             return;
-            //e.printStackTrace();
         }
 
         Thread nodeThread = new Thread((Runnable) () -> {
 
             while (true) {
 
-                System.out.println("------------------------------");
-                System.out.println("Jeg er tråd: " + listenPort);
-                System.out.println("Previous Node: " + prev);
-                System.out.println("Next Node: " + next);
-                System.out.println("Next next Node: " + nextnext);
-                System.out.println("------------------------------");
-
-                if (tempSocket != null) {
-                    try {
-                        DataInputStream in = new DataInputStream(tempSocket.getInputStream());
-
-                        while (true) {
-
-                            next = in.readUTF();
-
-                        }
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-
                 try {
+
+                    System.out.println("------------------------------");
+                    System.out.println("Jeg er tråd: " + listenPort);
+                    System.out.println("Previous Node: " + prev);
+                    System.out.println("Next Node: " + next);
+                    System.out.println("Next next Node: " + nextnext);
+                    System.out.println("------------------------------");
 
                     Thread.sleep(3000);
 
+                    // lyt på nye beskeder - og en form for identificering!
+                    // Afhængig af besked, gør stuff
+                    // ly på "connectionSocket"
+                    connectionSocket.accept(); // returnere socket object som har "get input stream" etc funktioner
+
                 } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
@@ -93,6 +88,14 @@ public class Node {
         });
 
         nodeThread.start();
+    }
+
+    public void updateNode(String ip, int port) throws IOException {
+
+        Socket nodeSocket = new Socket(ip, port);
+
+
+
     }
 
     public static void main(String[] args) throws IOException {
