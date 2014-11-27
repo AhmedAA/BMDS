@@ -92,7 +92,7 @@ public class Node {
             messages.put(key, message);
         }
         else {
-            System.out.println("A message already exists there!");
+            System.out.println("A message already exists with that key!");
         }
     }
 
