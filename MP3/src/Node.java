@@ -39,7 +39,6 @@ public class Node {
                 // setting "prev" to the friend
                 prev = friendVars[0];
 
-                
                 // my friend needs to know about our friendship!
                 String[] friendData = friendVars[0].split(":");
 
