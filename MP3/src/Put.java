@@ -17,14 +17,11 @@ public class Put implements Serializable{
         m.key = Integer.parseInt(args[2]);
         m.message = args[3];
 
-        DataOutputStream nodeOut = new DataOutputStream(nodeSocket.getOutputStream());
-        nodeOut.writeUTF("Putting");
-
         ObjectOutputStream nodeObjectOut = new ObjectOutputStream(nodeSocket.getOutputStream());
+        nodeObjectOut.writeObject("Putting");
         nodeObjectOut.writeObject(m);
 
         nodeObjectOut.close();
-        nodeOut.close();
         //nodeSocket.close();
 
         // Old code
