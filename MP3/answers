@@ -1,0 +1,27 @@
+Is your system:
+a publish/subscribe system?
+... a message Queue?
+... a structured P2P system?
+... an unstructured P2P system?
+... a distributed set implementation?
+... a distributed hash table implementation?
+
+Our system is an unstructured P2P system. Data is shared between clients connected to each other in the system, and
+others can fetch specific data from the network if a client has the data.
+It is not structered since there is no control imposed on the network in its entirerity. It uses a distributed set
+implementation, since all nodes, that are connected, share the same data in the network.
+It could have implemented as centralised P2P solution, with a "server" knowing all the nodes in the system, and having
+a centralised data set that all the nodes could share.
+
+What is the average-case, best-case, and worst-case space consumed at each Node?
+
+What is the average-case, best-case and worst-case number and size of messages being sent as a result of
+A PUT message from a client, and
+
+A successful GET message from a client (that is, a value is found and sent back.)
+
+An unsuccessful GET message from a client (that is, no value is found.)
+
+Based on 2 and 3, write a paragraph or two on the current scalability of your system.
+
+Based on 2, 3 and 4, give suggestions for improving the scalability of your system.
