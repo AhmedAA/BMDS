@@ -1,0 +1,18 @@
+Time consumption:
+
+We used a total of four working-days (pr. 8hrs) to implement the solution, were we worked together.
+
+Reflection on code:
+
+The biggest remaining part of this solution is the need for refactoring. A lot of our functions and logic is in the "Node" class, and this makes the class pretty "ugly" and flooded to work with.
+Furthermore our "GET" solution does not wait for nodes to get the required input (PUT), but terminates right after the GET call has been made.
+We store all the messages in a hashmap, and therefore know whether or not the message that GET asks for is actually available. The solution could be expanded to store GET calls, and then loop through
+each of them, every time a node receives a PUT. We simply ran out of time to do this, and settled with our current solution.
+
+Brief walkthrough of our solution:
+
+We pass down the HashMaps to the different nodes, by saving each node's "next" and "previous" node relationship, and in this way ensuring that all nodes in the same network - share the same information.
+Right now we copy the HashMap of a given node to the "next" and "previous" node, and furthermore the "nextNext" node information is stored. Our solution does NOT copy the data to the "nextNext" node, and therefore we
+actually do not have any node resilisency. If we implemented the "nextNext" node to also get the HashMap (aswell as "previousPrevious"), we would have n node resilisency.
+
+Rasmus Løbner Christensen & Ahmed Al Aqtash

@@ -1,6 +1,5 @@
-<<<<<<< HEAD
+import java.net.InetAddress;
 import java.io.IOException;
-=======
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -51,6 +50,5 @@ public class Get {
         // invoke new get-client
         new Get(key, args[1], port);
 
-        nodeSocket = new Socket(nodeIP, nodePort);
     }
 }

@@ -1,3 +1,7 @@
+The following answers covers both A and B. Since we made the solution in one go (keeping in mind the two requirements).
+
+The breif walkthrough of our solution is found in the "feedback.txt" file.
+
 Is your system:
 a publish/subscribe system?
 ... a message Queue?
@@ -15,13 +19,31 @@ a centralised data set that all the nodes could share.
 
 What is the average-case, best-case, and worst-case space consumed at each Node?
 
+We understand this question as a question about the amount of space used for each node in order to save the messages.
+
+Average-case: n/a
+Best-case: No one uses the network - if theres is no data to be saved, there is no space consumed.
+Worst-case: If that HashMap at the given node gets a lot of data. One could imagine that the HashMaps has an upper limit for the amount of data.
+
 What is the average-case, best-case and worst-case number and size of messages being sent as a result of
-A PUT message from a client, and
+A PUT message from a client:
+
+Best-case: There is only 1 node in the network. Therefore it is only required to connect to this node, and store the data. This takes 5 messages (this include creating socket connections and standard I/O)
+Average-case: There is a amount of nodes in the network, and for each of these nodes 5 messages is required.
+Worst-case: I have a lot of nodes (imagine on a wire). If I PUT to the one in the middle, I have to ripple the sent data both ways on the wire. This would again require 5 messages pr. node.
 
 A successful GET message from a client (that is, a value is found and sent back.)
+Our current implementation of GET, contacts a node and the node responds whether the key is found. This operation only requires 5 messages (this include creating socket connections and standard I/O) at any given point.
 
 An unsuccessful GET message from a client (that is, no value is found.)
+Read the above.
 
 Based on 2 and 3, write a paragraph or two on the current scalability of your system.
+Since we just put data into a HashMap, our system does not scale really well looking at space consumption. All our nodes have a copy of the HashMap, and therefore they all require this amount of space.
+Furthermore its not possible to remove data from our HashMaps (or overwrite), which means that ALL data stays in the system, until a node terminates.
 
 Based on 2, 3 and 4, give suggestions for improving the scalability of your system.
+One could imagine a solution where the HashMaps actually were shared across Nodes, and not stored at each node. One could imagine a solution where no datastructure was used: Instead of storing data at nodes,
+the data would only be immidiately forwarded to the GET clients, when a PUT client actually sent data (sort of a publish/subscribe system).
+
+Rasmus Løbner Christensen & Ahmed Al Aqtash.
