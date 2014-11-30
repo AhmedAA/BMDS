@@ -1,11 +1,11 @@
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by Ahmed & Rasmus on 13/11/14.
@@ -19,6 +19,7 @@ public class Node {
     private Socket tempSocket;
     private String[] friendData;
     private ServerSocket connectionSocket = null;
+    private HashMap messages = null;
 
     public Node(int port, String... friendVars) {
 
@@ -27,6 +28,9 @@ public class Node {
 
             // get local IP address
             InetAddress localHost = InetAddress.getLocalHost();
+
+            // hashmap
+            HashMap messages = new HashMap<>();
 
             // create socket for Node
             listenPort = port;
@@ -48,7 +52,7 @@ public class Node {
                 Socket friendConnector = new Socket(friendData[0], Integer.parseInt(friendData[1]));
 
                 // Trying to start a dialogue (small talk) ...
-                DataOutputStream toFriend = new DataOutputStream(friendConnector.getOutputStream());
+                ObjectOutputStream toFriend = new ObjectOutputStream(friendConnector.getOutputStream());
 
                 // in order to update our new friend, we need to tell about our friends!
                 // order: handshake msg., myself (new next), next (new nextnext)
@@ -56,7 +60,7 @@ public class Node {
                 friendMsg = "FriendNext" + ";" + connectionSocket.getInetAddress().getHostAddress() + ":" + connectionSocket.getLocalPort();
 
                 // sending friend data
-                toFriend.writeUTF(friendMsg);
+                toFriend.writeObject(friendMsg);
 
             }
 
@@ -68,6 +72,9 @@ public class Node {
 
         Thread nodeThread = new Thread((Runnable) () -> {
 
+            // Message data structure
+            HashMap messages = new HashMap<>();
+
             while (true) {
 
                 try {
@@ -77,45 +84,98 @@ public class Node {
                     System.out.println("Previous Node: " + prev);
                     System.out.println("Next Node: " + next);
                     System.out.println("Next next Node: " + nextnext);
+                    System.out.println("DATA(key=1) er: " + messages.get(1));
+                    System.out.println("DATA(key=2) er: " + messages.get(2));
                     System.out.println("------------------------------");
 
-                    // Message data structure
-                    HashMap messages = new HashMap<>();
-
                     Socket handShake = connectionSocket.accept();
-                    DataInputStream in = new DataInputStream(handShake.getInputStream());
-                    String data = in.readUTF();
 
-                    System.out.println(data);
-                    //next = data;
+                    ObjectInputStream in = new ObjectInputStream(handShake.getInputStream());
 
-                    String[] friendData = data.split(";");
+                    Object data = in.readObject();
 
-                    if (data.equals("Putting")){
-                        //pull data, call addMessage
-                        System.out.println("Read putting?");
-                        ObjectInputStream message = new ObjectInputStream(in);
-                        Message m = (Message) message.readObject();
+                    if (data.getClass().equals(String.class)) {
 
-                        addMessage(messages, m.key, m.message);
-                        //message.close();
+                        String input = (String) data;
+                        friendData = input.split(";");
+
+                    }
+
+                    else {
+
+                        // TODO
+                        messages = (HashMap) data;
+                        friendData = "l33t;haxx".split(";");
+
+                    }
+
+                    if (friendData[0].equals("Putting")){
+
+                        Message m = (Message) in.readObject();
+
+                        if ((!messages.isEmpty()) || (String) messages.get(m.key) == m.message) {
+
+                            // already updated !
+                        }
+
+                        else {
+
+                            addMessage(messages, m.key, m.message);
+
+                            String key = Integer.toString(m.key);
+
+                            if (next == null) {
+
+                                //nothing to update, moving on ...
+                            }
+                            else {
+
+                                String[] nextPut = next.split(":");
+                                String[] moreData = new String[4];
+
+                                moreData[0] = nextPut[0];
+                                moreData[1] = nextPut[1];
+                                moreData[2] = key;
+                                moreData[3] = m.message;
+
+                                Put.main(moreData);
+
+                                if (prev != null) {
+
+                                    String[] prevPut = prev.split(":");
+                                    String[] evenMoreData = new String[4];
+
+                                    evenMoreData[0] = prevPut[0];
+                                    evenMoreData[1] = prevPut[1];
+                                    evenMoreData[2] = key;
+                                    evenMoreData[3] = m.message;
+
+                                    Put.main(evenMoreData);
+                                }
+                            }
+                        }
                     }
 
                     else if (friendData[0].equals("FriendNext")) {
 
                         next = friendData[1];
 
+                        String[] dataStr = friendData[1].split(":");
+                        Socket dataBack = new Socket(dataStr[0], Integer.parseInt(dataStr[1]));
+                        ObjectOutputStream dataOut = new ObjectOutputStream(dataBack.getOutputStream());
+                        dataOut.writeObject(messages);
+
                         if (nextnext == null && prev != null) {
 
                             String[] nextNextStr = prev.split(":");
                             Socket nextNextSocket = new Socket(nextNextStr[0], Integer.parseInt(nextNextStr[1]));
-                            DataOutputStream nextNextFriend = new DataOutputStream(nextNextSocket.getOutputStream());
+                            ObjectOutputStream nextNextFriend = new ObjectOutputStream(nextNextSocket.getOutputStream());
 
                             String nextNextMsg;
                             nextNextMsg = "FriendNextNext" + ";" + next;
 
                             // sending friend data
-                            nextNextFriend.writeUTF(nextNextMsg);
+                            nextNextFriend.writeObject(nextNextMsg);
 
                         }
 
@@ -127,8 +187,25 @@ public class Node {
 
                     }
 
-                    else if (data.equals("Getting")) {
-                        //fetch data, send data
+                    else if (friendData[0].equals("Getting")) {
+
+                        String[] sendBack = friendData[1].split(":");
+
+                        Socket dataBack = new Socket(sendBack[0], Integer.parseInt(sendBack[1]));
+                        DataOutputStream dataOut = new DataOutputStream(dataBack.getOutputStream());
+
+                        if (messages.containsKey(Integer.parseInt(sendBack[2]))) {
+
+                            dataOut.writeUTF("SUCCES! - Key: (" + sendBack[2] + ", " + messages.get(Integer.parseInt(sendBack[2])) + ")");
+
+                        }
+
+                        else {
+
+                            dataOut.writeUTF("FAIL! - No key matches in Node network");
+
+                        }
+
                     }
 
                     // node has been updated (in some way!)
@@ -149,21 +226,11 @@ public class Node {
     private void addMessage(HashMap messages, int key, String message){
         if(!messages.containsKey(key)) {
             messages.put(key, message);
-            System.out.println("Added message with key " + key + " value: " + message);
+            System.out.println("Added message with key " + key + " value: " + message + "\n");
         }
         else {
             System.out.println("A message already exists with that key!");
         }
-    }
-
-    private void getMessages() {
-
-    }
-
-    public void updateNode(String ip, int port) throws IOException {
-
-        Socket nodeSocket = new Socket(ip, port);
-
     }
 
     public static void main(String[] args) throws IOException {
